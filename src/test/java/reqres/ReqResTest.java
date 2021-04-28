@@ -1,10 +1,13 @@
 package reqres;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -14,13 +17,12 @@ public class ReqResTest {
     public static void setUp() {
         RestAssured.baseURI = "https://reqres.in";
         RestAssured.basePath = "/api";
+        RestAssured.filters(new RequestLoggingFilter(), new RequestLoggingFilter());
     }
 
     @Test
     public void loginOk() {
-        RestAssured
-                .given()
-                .log().all()
+        given()
                 .contentType(ContentType.JSON)
                 .body("{\n" +
                         "    \"email\": \"eve.holt@reqres.in\",\n" +
@@ -28,9 +30,7 @@ public class ReqResTest {
                         "}")
                 .post("login")
                 .then()
-                .log()
-                .all()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body("token", notNullValue());
 
     }
@@ -54,15 +54,11 @@ public class ReqResTest {
             }
         }
          */
-        RestAssured
-                .given()
-                .log().all()
+        given()
                 .contentType(ContentType.JSON)
                 .get("/users/2")
                 .then()
-                .log()
-                .all()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body("data.id", equalTo(2))
                 .body("data.email", equalTo("janet.weaver@reqres.in"))
                 .body("data.first_name", equalTo("Janet"))

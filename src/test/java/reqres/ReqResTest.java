@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -70,6 +71,57 @@ public class ReqResTest {
                 .body("data.first_name", equalTo("Janet"))
                 .body("data.last_name", equalTo("Weaver"))
                 .body("data.avatar", equalTo("https://reqres.in/img/faces/2-image.jpg"));
+
+    }
+
+    @Test
+    public void deleteSingleUserTest() {
+
+        given()
+                .contentType(ContentType.JSON)
+                .delete("/users/2")
+                .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT);
+
+    }
+
+    @Test
+    public void patchSingleUserTest() {
+
+        String nameUpdated = given()
+                .contentType(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \"morpheus\",\n" +
+                        "    \"job\": \"zion resident\"\n" +
+                        "}")
+                .patch("/users/2")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .jsonPath()
+                .getString("name");
+
+        assertThat(nameUpdated, equalTo("morpheus"));
+
+    }
+
+    @Test
+    public void putSingleUserTest() {
+
+        String jobUpdated = given()
+                .contentType(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \"morpheus\",\n" +
+                        "    \"job\": \"zion resident\"\n" +
+                        "}")
+                .patch("/users/2")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .jsonPath()
+                .getString("job");
+
+        assertThat(jobUpdated, equalTo("zion resident"));
 
     }
 }

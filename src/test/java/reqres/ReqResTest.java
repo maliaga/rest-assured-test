@@ -1,6 +1,7 @@
 package reqres;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
@@ -15,9 +16,14 @@ public class ReqResTest {
 
     @BeforeAll
     public static void setUp() {
-        RestAssured.baseURI = "https://reqres.in";
-        RestAssured.basePath = "/api";
-        RestAssured.filters(new RequestLoggingFilter(), new RequestLoggingFilter());
+
+        RestAssured.requestSpecification = new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .setBaseUri("https://reqres.in")
+                .setBasePath("/api")
+                .addFilter(new RequestLoggingFilter())
+                .addFilter(new RequestLoggingFilter())
+                .build();
     }
 
     @Test

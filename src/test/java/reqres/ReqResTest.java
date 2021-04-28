@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
+import io.restassured.http.Headers;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -123,5 +125,25 @@ public class ReqResTest {
 
         assertThat(jobUpdated, equalTo("zion resident"));
 
+    }
+
+    @Test
+    public void getHeaders() {
+        Response response = given().get("/users?pase=2");
+
+        Headers headers = response.getHeaders();
+        String contentType = response.getContentType();
+        String body = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+
+        assertThat(statusCode, equalTo(HttpStatus.SC_OK));
+
+        System.out.println("------------------------------");
+        System.out.println(headers);
+        System.out.println("------------------------------");
+        System.out.println(contentType);
+        System.out.println("------------------------------");
+        System.out.println(body);
+        System.out.println("------------------------------");
     }
 }

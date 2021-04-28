@@ -4,16 +4,17 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
-import io.restassured.http.Headers;
-import io.restassured.response.Response;
-import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reqres.model.User;
+
+import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 public class ReqResTest {
 
@@ -30,120 +31,58 @@ public class ReqResTest {
     }
 
     @Test
-    public void loginOk() {
-        given()
+    public void parserBody() {
+        String body = given()
                 .contentType(ContentType.JSON)
-                .body("{\n" +
-                        "    \"email\": \"eve.holt@reqres.in\",\n" +
-                        "    \"password\": \"cityslicka\"\n" +
-                        "}")
-                .post("login")
+                .get("/users?page=2")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
-                .body("token", notNullValue());
+                .extract()
+                .body()
+                .asString();
 
+        int page = from(body).get("page");
+        int totalPages = from(body).get("total_pages");
+        int idFirstUser = from(body).get("data[0].id");
+
+        System.out.println("page" + page);
+        System.out.println("Total Pages " + totalPages);
+        System.out.println("ID First User " + idFirstUser);
+
+        List<Map> usersWithIdGreaterThan10 = from(body).get("data.findAll { user -> user.id > 10}");
+
+        String email = usersWithIdGreaterThan10.get(0).get("email").toString();
+        System.out.println("EMAIL " + email);
+
+        assertThat(email, equalTo("george.edwards@reqres.in"));
+
+        List<Map> usersWithIdGreaterThan10andLastName = from(body).get("data.findAll { user -> user.id > 10 && user.last_name == 'Howell'}");
+
+         int id = Integer.parseInt(usersWithIdGreaterThan10andLastName.get(0).get("id").toString());
+
+        System.out.println("ID " + id);
+
+        assertThat(id, equalTo(12));
     }
 
     @Test
-    public void getSingleUserTest() {
-
-        //Response
-        /*
-        {
-            "data": {
-                "id": 2,
-                "email": "janet.weaver@reqres.in",
-                "first_name": "Janet",
-                "last_name": "Weaver",
-                "avatar": "https://reqres.in/img/faces/2-image.jpg"
-            },
-            "support": {
-                "url": "https://reqres.in/#support-heading",
-                "text": "To keep ReqRes free, contributions towards server costs are appreciated!"
-            }
-        }
-         */
-        given()
-                .contentType(ContentType.JSON)
-                .get("/users/2")
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .body("data.id", equalTo(2))
-                .body("data.email", equalTo("janet.weaver@reqres.in"))
-                .body("data.first_name", equalTo("Janet"))
-                .body("data.last_name", equalTo("Weaver"))
-                .body("data.avatar", equalTo("https://reqres.in/img/faces/2-image.jpg"));
-
-    }
-
-    @Test
-    public void deleteSingleUserTest() {
-
-        given()
-                .contentType(ContentType.JSON)
-                .delete("/users/2")
-                .then()
-                .statusCode(HttpStatus.SC_NO_CONTENT);
-
-    }
-
-    @Test
-    public void patchSingleUserTest() {
-
-        String nameUpdated = given()
-                .contentType(ContentType.JSON)
+    public void parsePostCreateUser() {
+        String body = given()
+                .when()
                 .body("{\n" +
                         "    \"name\": \"morpheus\",\n" +
-                        "    \"job\": \"zion resident\"\n" +
+                        "    \"job\": \"leader\"\n" +
                         "}")
-                .patch("/users/2")
+                .post("/users")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
                 .extract()
-                .jsonPath()
-                .getString("name");
+                .body()
+                .asString();
 
-        assertThat(nameUpdated, equalTo("morpheus"));
+        User user = from(body).getObject("", User.class);
 
-    }
-
-    @Test
-    public void putSingleUserTest() {
-
-        String jobUpdated = given()
-                .contentType(ContentType.JSON)
-                .body("{\n" +
-                        "    \"name\": \"morpheus\",\n" +
-                        "    \"job\": \"zion resident\"\n" +
-                        "}")
-                .patch("/users/2")
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .jsonPath()
-                .getString("job");
-
-        assertThat(jobUpdated, equalTo("zion resident"));
-
-    }
-
-    @Test
-    public void getHeaders() {
-        Response response = given().get("/users?pase=2");
-
-        Headers headers = response.getHeaders();
-        String contentType = response.getContentType();
-        String body = response.getBody().asString();
-        int statusCode = response.getStatusCode();
-
-        assertThat(statusCode, equalTo(HttpStatus.SC_OK));
-
-        System.out.println("------------------------------");
-        System.out.println(headers);
-        System.out.println("------------------------------");
-        System.out.println(contentType);
-        System.out.println("------------------------------");
-        System.out.println(body);
-        System.out.println("------------------------------");
+        System.out.println("ID " + user.getId());
+        System.out.println("Name " + user.getName());
+        System.out.println("Job " + user.getJob());
+        System.out.println("CreateAt " + user.getCreatedAt());
     }
 }

@@ -2,12 +2,19 @@ package reqres;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class ReqResTest {
+
+    @BeforeAll
+    public static void setUp() {
+        RestAssured.baseURI = "https://reqres.in";
+        RestAssured.basePath = "/api";
+    }
 
     @Test
     public void loginOk() {
@@ -19,7 +26,7 @@ public class ReqResTest {
                         "    \"email\": \"eve.holt@reqres.in\",\n" +
                         "    \"password\": \"cityslicka\"\n" +
                         "}")
-                .post("https://reqres.in/api/login")
+                .post("login")
                 .then()
                 .log()
                 .all()
@@ -51,7 +58,7 @@ public class ReqResTest {
                 .given()
                 .log().all()
                 .contentType(ContentType.JSON)
-                .get("https://reqres.in/api/users/2")
+                .get("/users/2")
                 .then()
                 .log()
                 .all()

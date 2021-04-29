@@ -1,4 +1,4 @@
-package reqres;
+package reqres.basic;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -6,7 +6,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import reqres.model.User;
+import dev.aliaga.basic.model.User;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ReqResTest {
+public class ReqResBasicTest {
 
     @BeforeAll
     public static void setUp() {
@@ -46,7 +46,7 @@ public class ReqResTest {
 
         System.out.println("page" + page);
         System.out.println("Total Pages " + totalPages);
-        System.out.println("ID First User " + idFirstUser);
+        System.out.println("ID First dev.aliaga.model.User " + idFirstUser);
 
         List<Map> usersWithIdGreaterThan10 = from(body).get("data.findAll { user -> user.id > 10}");
 

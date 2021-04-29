@@ -1,5 +1,7 @@
 package reqres.login;
 
+import dev.aliaga.login.model.CreateUserRequest;
+import dev.aliaga.login.model.CreateUserResponse;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -30,7 +32,12 @@ public class Main {
     @Test
     public void createUser() {
 
-        CreateUserRequest request = new CreateUserRequest("morpheus", "leader");
+        CreateUserRequest request = CreateUserRequest
+                .builder()
+                .name("morpheus")
+                .job("leader")
+                .build();
+
         CreateUserResponse createUserResponse = given()
                 .when()
                 .body(request)

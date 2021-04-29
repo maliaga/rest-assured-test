@@ -1,33 +1,18 @@
 package reqres.basic;
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reqres.BaseTest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class ReqResCrudTest {
-
-    @BeforeAll
-    public static void setUp() {
-
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .setBaseUri("https://reqres.in")
-                .setBasePath("/api")
-                .addFilter(new RequestLoggingFilter())
-                .addFilter(new RequestLoggingFilter())
-                .build();
-    }
+public class ReqResCrudTest extends BaseTest {
 
     @Test
     public void loginOk() {

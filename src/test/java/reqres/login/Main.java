@@ -2,32 +2,16 @@ package reqres.login;
 
 import dev.aliaga.login.model.CreateUserRequest;
 import dev.aliaga.login.model.CreateUserResponse;
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reqres.BaseTest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class Main {
-
-    @BeforeAll
-    public static void setUp() {
-
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .setBaseUri("https://reqres.in")
-                .setBasePath("/api")
-                .addFilter(new RequestLoggingFilter())
-                .addFilter(new RequestLoggingFilter())
-                .build();
-    }
+public class Main extends BaseTest {
 
     @Test
     public void createUser() {

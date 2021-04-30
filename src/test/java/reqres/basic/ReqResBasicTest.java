@@ -1,12 +1,9 @@
-package reqres;
+package reqres.basic;
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.RequestLoggingFilter;
+import dev.aliaga.basic.model.User;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import reqres.model.User;
+import reqres.BaseTest;
 
 import java.util.List;
 import java.util.Map;
@@ -16,19 +13,7 @@ import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ReqResTest {
-
-    @BeforeAll
-    public static void setUp() {
-
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .setBaseUri("https://reqres.in")
-                .setBasePath("/api")
-                .addFilter(new RequestLoggingFilter())
-                .addFilter(new RequestLoggingFilter())
-                .build();
-    }
+public class ReqResBasicTest extends BaseTest {
 
     @Test
     public void parserBody() {
@@ -46,7 +31,7 @@ public class ReqResTest {
 
         System.out.println("page" + page);
         System.out.println("Total Pages " + totalPages);
-        System.out.println("ID First User " + idFirstUser);
+        System.out.println("ID First dev.aliaga.model.User " + idFirstUser);
 
         List<Map> usersWithIdGreaterThan10 = from(body).get("data.findAll { user -> user.id > 10}");
 
@@ -57,7 +42,7 @@ public class ReqResTest {
 
         List<Map> usersWithIdGreaterThan10andLastName = from(body).get("data.findAll { user -> user.id > 10 && user.last_name == 'Howell'}");
 
-         int id = Integer.parseInt(usersWithIdGreaterThan10andLastName.get(0).get("id").toString());
+        int id = Integer.parseInt(usersWithIdGreaterThan10andLastName.get(0).get("id").toString());
 
         System.out.println("ID " + id);
 
